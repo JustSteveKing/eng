@@ -13,5 +13,9 @@ Route::middleware(['web',InitializeTenancyByDomain::class,PreventAccessFromCentr
 
     Route::middleware(['auth'])->group(static function (): void {
         Route::view('/', 'pages.tenants.index')->name('home');
+
+        Route::prefix('settings')->as('settings:')->group(base_path(
+            path: 'routes/tenants/settings.php',
+        ));
     });
 });
