@@ -40,4 +40,13 @@ final class Team extends Model
             foreignKey: 'user_id',
         );
     }
+
+    public function image(): string
+    {
+        if ($this->logo) {
+            return $this->logo;
+        }
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=7F9CF5&background=EBF4FF';
+    }
 }

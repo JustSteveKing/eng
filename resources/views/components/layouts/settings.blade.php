@@ -1,7 +1,7 @@
 @props(['title' => config('app.name'), 'tenant' => tenant()])
 
 <x-layouts.app title="{{ $title }}" :tenant="$tenant">
-    <div class="lg:grid lg:grid-cols-12">
+    <div class="lg:grid lg:grid-cols-12 py-12">
         <aside class="w-full flex items-start justify-center px-2 py-6 sm:px-6 lg:col-span-1 lg:px-0 lg:py-0">
             <nav class="space-y-1">
                 <a
