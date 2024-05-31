@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Closure;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -16,11 +18,10 @@ use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 
+use function base_path;
+
 final class TenancyServiceProvider extends ServiceProvider
 {
-    // By default, no namespace is used to support the callable array syntax.
-    public static string $controllerNamespace = '';
-
     /** @return array<class-string,mixed> */
     public function events(): array
     {
@@ -116,6 +117,10 @@ final class TenancyServiceProvider extends ServiceProvider
 
     protected function bootEvents(): void
     {
+        /**
+         * @var class-string $event
+         * @var array<int,Closure|string|array|object|null> $listeners
+         */
         foreach ($this->events() as $event => $listeners) {
             foreach ($listeners as $listener) {
                 if ($listener instanceof JobPipeline) {
@@ -130,7 +135,7 @@ final class TenancyServiceProvider extends ServiceProvider
     protected function mapRoutes(): void
     {
         $this->app->booted(function (): void {
-            Route::namespace(TenancyServiceProvider::$controllerNamespace)->group(base_path(
+            Route::as('pages:tenants:')->group(base_path(
                 path: 'routes/tenants/routes.php',
             ));
         });
@@ -142,7 +147,7 @@ final class TenancyServiceProvider extends ServiceProvider
             // Even higher priority than the initialization middleware
             Middleware\PreventAccessFromCentralDomains::class,
 
-            Middleware\InitializeTenancyByDomain::class,
+            InitializeTenancyByDomain::class,
             Middleware\InitializeTenancyBySubdomain::class,
             Middleware\InitializeTenancyByDomainOrSubdomain::class,
             Middleware\InitializeTenancyByPath::class,
@@ -150,7 +155,7 @@ final class TenancyServiceProvider extends ServiceProvider
         ];
 
         foreach (array_reverse($tenancyMiddleware) as $middleware) {
-            $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependToMiddlewarePriority($middleware);
+            $this->app[Kernel::class]->prependToMiddlewarePriority($middleware);
         }
     }
 }
