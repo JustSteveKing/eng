@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -52,6 +53,24 @@ final class User extends Authenticatable
     {
         return $this->hasMany(
             related: Team::class,
+            foreignKey: 'user_id',
+        );
+    }
+
+    /** @return HasMany<Department> */
+    public function departments(): HasMany
+    {
+        return $this->hasMany(
+            related: Department::class,
+            foreignKey: 'user_id',
+        );
+    }
+
+    /** @return HasOne<Employee> */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(
+            related: Employee::class,
             foreignKey: 'user_id',
         );
     }

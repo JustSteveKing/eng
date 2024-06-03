@@ -28,6 +28,8 @@ final class ProfileForm extends Component
             'name' => $this->name,
             'email' => $this->email,
         ]);
+
+        $this->dispatch('user-updated');
     }
 
     /** @return array<string,array<int,mixed>> */

@@ -2,14 +2,17 @@ import forms from "@tailwindcss/forms"
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
-    "./resources/**/*.blade.php",
-  ],
+		"./resources/**/*.blade.php",
+		 "./vendor/robsontenorio/mary/src/View/Components/**/*.php"
+	],
   theme: {
     extend: {},
   },
   plugins: [
-    forms,
-  ],
+		forms,
+		require("daisyui")
+	],
 }
 

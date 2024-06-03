@@ -1,26 +1,61 @@
-@props(['title' => config('app.name'), 'tenant' => tenant('id')])
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ isset($title) ? $title.' - '.config('app.name') : config('app.name') }}</title>
 
-<x-layouts.page title="{{ $title }} | {{ $tenant }}">
-    <div x-data="{ open: false }" @keydown.window.escape="open = false">
-        <livewire:tenant.navigation />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="min-h-screen font-sans antialiased bg-base-200/50 dark:bg-base-200">
 
-        <div class="lg:pl-72">
-            <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-                <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" @click="open = true">
-                    <span class="sr-only">Open sidebar</span>
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
-                    </svg>
-                </button>
+    {{-- NAVBAR mobile only --}}
+    <x-nav sticky class="lg:hidden">
+        <x-slot:brand>
+            <x-app-brand />
+        </x-slot:brand>
+        <x-slot:actions>
+            <label for="main-drawer" class="lg:hidden mr-3">
+                <x-icon name="o-bars-3" class="cursor-pointer" />
+            </label>
+        </x-slot:actions>
+    </x-nav>
 
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 lg:hidden" aria-hidden="true"></div>
+    {{-- MAIN --}}
+    <x-main full-width>
+        {{-- SIDEBAR --}}
+        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-inherit">
 
-                <livewire:tenant.header />
-            </div>
+            {{-- BRAND --}}
+            <x-app-brand class="p-5 pt-3" />
 
-            <main id="content" aria-labelledby="content">
-                {{ $slot }}
-            </main>
-        </div>
-    </div>
-</x-layouts.page>
+            {{-- MENU --}}
+            <x-menu title="{{ null }}" activate-by-route>
+
+                @if(auth()->check())
+                    <x-menu-separator />
+
+                    <livewire:tenants.user-menu />
+
+                    <x-menu-separator />
+                @endif
+
+                <x-menu-item title="Dashboard" icon="o-sparkles" link="/" />
+                <x-menu-sub title="Settings" icon="o-cog-6-tooth">
+                    <x-menu-item title="Profile" icon="o-wifi" link="{{ route('pages:tenants:settings:profile') }}" />
+                    <x-menu-item title="Tenant" icon="o-archive-box" link="####" />
+                </x-menu-sub>
+            </x-menu>
+        </x-slot:sidebar>
+
+        {{-- The `$slot` goes here --}}
+        <x-slot:content>
+            {{ $slot }}
+        </x-slot:content>
+    </x-main>
+
+    {{--  TOAST area --}}
+    <x-toast />
+</body>
+</html>
